@@ -161,7 +161,7 @@ function updateWindowFunctions() {
 
             case 27:
                 // ESC (Menu)
-                $("#overlays").fadeIn(6E2);;
+                $("#overlays").fadeIn(6E2);
                 break;
 
             case 13:
@@ -183,7 +183,6 @@ function updateWindowFunctions() {
 
                     send(buffer);
 
-                    isTyping = false;
                     textBox.value = "";
                 };
                 break;
@@ -207,6 +206,10 @@ function updateWindowFunctions() {
 
     $("#chat").on("focus", function () {
         isTyping = true;
+    });
+
+    $("#chat").on("blur", function () {
+        isTyping = false;
     });
 
     // Handle options
