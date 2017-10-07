@@ -31,10 +31,11 @@ let posSize = 1;
 let zoom = 1;
 let minX = 0;
 let minY = 0;
-let isWatching = false;
 let maxX = 0;
 let maxY = 0;
 let noRanking = false;
+let isWatching = false;
+let isTyping = false;
 let options = {
     delay: 120,
     sectors: false,
@@ -103,22 +104,32 @@ function updateWindowFunctions() {
         switch (event.keyCode) {
             case 81:
                 // Q
+                if (isTyping === true) {
+                    return;
+                };
                 sendUint8(18);
                 break;
 
             case 32:
                 // Space (Split)
+                if (isTyping === true) {
+                    return;
+                };
                 sendUint8(17);
                 break;
 
             case 87:
                 // W
+                if (isTyping === true) {
+                    return;
+                };
+
                 sendUint8(21);
                 break;
 
             case 80:
                 // P (Collect pellets)
-                if (options.ERTP === false) {
+                if (options.ERTP === false && isTyping === false) {
                     return;
                 };
                 sendUint8(25);
@@ -164,14 +175,17 @@ function updateWindowFunctions() {
                     var offset = 0;
                     buffer.setUint8(offset++, 99);
                     buffer.setUint8(offset++, 0);
+
                     for (var i = 0; i < textBox.value.length; ++i) {
                         buffer.setUint16(offset, textBox.value.charCodeAt(i), true);
                         offset += 2;
-                    }
-                    send(buffer)
-                }
+                    };
 
-                textBox.value = "";
+                    send(buffer);
+
+                    isTyping = false;
+                    textBox.value = "";
+                };
                 break;
         };
 
@@ -191,6 +205,10 @@ function updateWindowFunctions() {
         $("#overlays").hide();
     };
 
+    $("#chat").on("focus", function () {
+        isTyping = true;
+    });
+
     // Handle options
     $("#delay").on("input", function () {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
@@ -200,7 +218,7 @@ function updateWindowFunctions() {
     $("#food").change(function () {
         options.hideFood = $(this).is(':checked');
     });
-    
+
     $("#ERTP").change(function () {
         options.ERTP = $(this).is(':checked');
     });
