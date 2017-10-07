@@ -920,14 +920,14 @@ Cell.prototype = {
                     ctx.fillText(this.name, this.x, this.y);
                 };
 
-                // Draw size
+                // Draw mass
                 if (mass >= 20) {
                     ctx.globalAlpha = 1;
                     ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                     ctx.fillStyle = '#FFF';
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.fillText(mass, this.x, this.y + 60);
+                    ctx.fillText(mass, this.x, this.y + 120);
                 };
             };
             ctx.restore()
