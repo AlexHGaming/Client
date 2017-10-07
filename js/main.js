@@ -67,16 +67,20 @@ $(document).ready(function () {
 function Main() {
     document.getElementById("canvas").focus();
     canvas = document.getElementById("canvas");
+
     canvas.onmousemove = function (event) {
         rawMouseX = event.clientX;
         rawMouseY = event.clientY;
         updateMouse()
     };
+
     document.body.onmousewheel = handleWheel;
     window.onresize = canvasResize;
+
     if (window.requestAnimationFrame) {
         reDraw();
-    }
+    };
+
     setInterval(sendMouseMove, 1);
     canvasResize();
     $("#overlays").fadeIn(600);
@@ -85,7 +89,7 @@ function Main() {
 function updateMouse() {
     X = (rawMouseX - ctx.canvas.width / 2) / viewZoom + nodeX;
     Y = (rawMouseY - ctx.canvas.height / 2) / viewZoom + nodeY
-}
+};
 
 
 function updateWindowFunctions() {
@@ -121,15 +125,15 @@ function updateWindowFunctions() {
                 if (textBox.value.length === 0) {
                     textBox.focus();
                 } else {
-                    var msg = prepareData(2 + 2 * textBox.value.length);
+                    var buffer = prepareData(2 + 2 * textBox.value.length);
                     var offset = 0;
-                    msg.setUint8(offset++, 99);
-                    msg.setUint8(offset++, 0);
+                    buffer.setUint8(offset++, 99);
+                    buffer.setUint8(offset++, 0);
                     for (var i = 0; i < textBox.value.length; ++i) {
-                        msg.setUint16(offset, textBox.value.charCodeAt(i), true);
+                        buffer.setUint16(offset, textBox.value.charCodeAt(i), true);
                         offset += 2;
                     }
-                    send(msg)
+                    send(buffer)
                 }
 
                 textBox.value = "";
@@ -144,8 +148,8 @@ function updateWindowFunctions() {
                 // Space (Split)
                 sendUint8(17);
                 break;
-        }
-    }
+        };
+    };
 
     window.setNick = function (arg) {
         $("#overlays").hide();
@@ -190,8 +194,8 @@ function updateWindowFunctions() {
 
     if (playerCells.length === 0 && isWatching === false) {
         $("#overlays").fadeIn(600);
-    }
-}
+    };
+};
 
 
 function resetVars() {
@@ -203,7 +207,7 @@ function resetVars() {
     leaderboard = [];
     canvas = /*teamScores =*/ null;
     userScore = 0;
-}
+};
 
 function connect(url) {
     console.log("Connecting to " + url);
@@ -214,16 +218,14 @@ function connect(url) {
         console.log("Error " + e);
     }
     ws.onopen = function () {
-        resetVars();
-
-        var msg = prepareData(5);
-        msg.setUint8(0, 254);
-        msg.setUint32(1, 4, true);
-        send(msg);
-        var msg = prepareData(5);
-        msg.setUint8(0, 255);
-        msg.setUint32(1, 1332175218, true);
-        send(msg);
+        var buffer = prepareData(5);
+        buffer.setUint8(0, 254);
+        buffer.setUint32(1, 4, true);
+        send(buffer);
+        var buffer = prepareData(5);
+        buffer.setUint8(0, 255);
+        buffer.setUint32(1, 1332175218, true);
+        send(buffer);
 
         setTimeout(function () {
             console.log('Connected to server!');
@@ -231,7 +233,6 @@ function connect(url) {
     }
     ws.onclose = function (e) {
         connect(request);
-        resetVars();
         console.log("Disconnected from server!");
     }
 }
@@ -239,19 +240,19 @@ function connect(url) {
 function handleWheel(event) {
     zoom *= Math.pow(.9, event.wheelDelta / -120 || event.detail || 0); - 1 > zoom && (zoom = -1);
     zoom > 4 / viewZoom && (zoom = 4 / viewZoom)
-}
+};
 
 function onWsMessage(msg) {
     handleMessage(new DataView(msg.data));
-}
+};
 
 function prepareData(data) {
     return new DataView(new ArrayBuffer(data))
-}
+};
 
 function send(data) {
     ws.send(data.buffer)
-}
+};
 
 function handleMessage(msg) {
     function getString() {
@@ -263,7 +264,7 @@ function handleMessage(msg) {
         }
         offset += 2;
         return text;
-    }
+    };
 
     var offset = 0,
         setCustomLB = false;
@@ -307,7 +308,8 @@ function handleMessage(msg) {
         case 49:
             if (!setCustomLB) {
                 noRanking = false;
-            }
+            };
+
             //teamScores = null;
             var LBplayerNum = msg.getUint32(offset, true);
             offset += 4;
@@ -319,7 +321,7 @@ function handleMessage(msg) {
                     id: nodeId,
                     name: getString()
                 });
-            }
+            };
             break;
             /*case 50:
                 teamScores = [];
@@ -342,15 +344,16 @@ function handleMessage(msg) {
             posX = (rightPos + leftPos) / 2;
             posY = (bottomPos + topPos) / 2;
             posSize = 1;
-            if (0 == playerCells.length) {
-                nodeX = posX;
-                nodeY = posY;
-                viewZoom = posSize;
-            }
             minX = leftPos;
             minY = topPos;
             maxX = rightPos;
             maxY = bottomPos;
+
+            if (0 == playerCells.length) {
+                nodeX = posX;
+                nodeY = posY;
+                viewZoom = posSize;
+            };
             break;
         case 99:
             offset++
@@ -379,6 +382,7 @@ function updateNodes(msg, offset) {
     var code = Math.random();
     var queueLength = msg.getUint16(offset, true);
     offset += 2;
+
     for (i = 0; i < queueLength; ++i) {
         var killer = nodes[msg.getUint32(offset, true)],
             killedNode = nodes[msg.getUint32(offset + 4, true)];
@@ -392,33 +396,41 @@ function updateNodes(msg, offset) {
             killedNode.ny = killer.y;
             killedNode.nSize = killedNode.size;
             killedNode.updateTime = timestamp;
-        }
-    }
-    for (var i = 0;;) {
+        };
+    };
+
+    while (1) {
         var nodeid = msg.getUint32(offset, true);
         offset += 4;
+
         if (0 == nodeid) break;
-        ++i;
+        i++;
+
         var size, posY, posX = msg.getInt16(offset, true);
         offset += 2;
+
         posY = msg.getInt16(offset, true);
         offset += 2;
+
         size = msg.getInt16(offset, true);
         offset += 2;
+
         for (var r = msg.getUint8(offset++), g = msg.getUint8(offset++), b = msg.getUint8(offset++), color = (r << 16 | g << 8 | b).toString(16); 6 > color.length;) color = "0" + color;
         var colorstr = "#" + color,
             flags = msg.getUint8(offset++),
             flagVirus = !!(flags & 1),
             flagPlayer = !!(flags & 16);
-        flags & 2 && (offset += 4);
-        flags & 4 && (offset += 8);
-        flags & 8 && (offset += 16);
+            flags & 2 && (offset += 4);
+            flags & 4 && (offset += 8);
+            flags & 8 && (offset += 16);
+
         for (var char, name = "";;) {
             char = msg.getUint16(offset, true);
             offset += 2;
             if (0 == char) break;
             name += String.fromCharCode(char)
-        }
+        };
+
         var node = null;
         if (nodes.hasOwnProperty(nodeid)) {
             node = nodes[nodeid];
@@ -433,7 +445,8 @@ function updateNodes(msg, offset) {
             nodes[nodeid] = node;
             node.ka = posX;
             node.la = posY;
-        }
+        };
+
         node.isVirus = flagVirus;
         node.isPlayer = flagPlayer;
         node.nx = posX;
@@ -442,15 +455,17 @@ function updateNodes(msg, offset) {
         node.updateCode = code;
         node.updateTime = timestamp;
         node.flag = flags;
+
         if (-1 != nodesOnScreen.indexOf(nodeid) && -1 == playerCells.indexOf(node)) {
             document.getElementById("overlays").style.display = "none";
             playerCells.push(node);
             if (1 == playerCells.length) {
                 nodeX = node.x;
                 nodeY = node.y;
-            }
-        }
-    }
+            };
+        };
+    };
+
     queueLength = msg.getUint32(offset, true);
     offset += 4;
     for (i = 0; i < queueLength; i++) {
@@ -458,19 +473,20 @@ function updateNodes(msg, offset) {
         offset += 4;
         node = nodes[nodeId];
         null != node && node.destroy();
-    }
-}
+    };
+};
 
 function Sectors() {
     // Taken from AgarPlus
 
     if (options.sectors === true) {
         ctx.strokeRect(minX, maxY, 500, 500);
-        var x = Math.round(minX) + 40;
-        var y = Math.round(minY) + 40;
-        var second = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-        var barWidth = (Math.round(maxX) - 90 - x) / 5;
-        var h = (Math.round(maxY) - 40 - y) / 5;
+        const x = Math.round(minX) + 40;
+        const y = Math.round(minY) + 40;
+        const second = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        const barWidth = (Math.round(maxX) - 90 - x) / 5;
+        const h = (Math.round(maxY) - 40 - y) / 5;
+
         ctx.save();
         ctx.beginPath();
         ctx.lineWidth = 0.05;
@@ -478,66 +494,64 @@ function Sectors() {
         ctx.textBaseline = "middle";
         ctx.font = barWidth * 0.6 + "px Russo One";
         ctx.fillStyle = "#" + options.sectorColour;
+
         var j = 0;
         for (; 5 > j; j++) {
             var i = 0;
             for (; 5 > i; i++) {
                 ctx.fillText(second[j] + (i + 1), x + barWidth * i + barWidth / 2, y + h * j + h / 2);
-            }
-        }
+            };
+        };
+
         ctx.lineWidth = 100;
         ctx.strokeStyle = "#1A1A1A";
+
         j = 0;
         for (; 5 > j; j++) {
             i = 0;
             for (; 5 > i; i++) {
                 ctx.strokeRect(x + barWidth * i, y + h * j, barWidth, h);
-            }
-        }
+            };
+        };
+
         ctx.stroke();
         ctx.restore();
     };
-}
+};
 
 function sendMouseMove() {
-    var msg;
-    if (wsIsOpen()) {
-        msg = rawMouseX - ctx.canvas.width / 2;
-        var b = rawMouseY - ctx.canvas.height / 2;
-        msg = prepareData(21);
-        msg.setUint8(0, 16);
-        msg.setFloat64(1, X, true);
-        msg.setFloat64(9, Y, true);
-        msg.setUint32(17, 0, true);
-        send(msg);
-    }
-}
+    if (ws.readyState == ws.OPEN) {
+        const buffer = prepareData(21);
+        buffer.setUint8(0, 16);
+        buffer.setFloat64(1, X, true);
+        buffer.setFloat64(9, Y, true);
+        buffer.setUint32(17, 0, true);
+        send(buffer);
+    };
+};
 
 function sendNickName() {
-    if (wsIsOpen() && null != userNickName) {
-        var msg = prepareData(1 + 2 * userNickName.length);
-        msg.setUint8(0, 0);
-        for (var i = 0; i < userNickName.length; ++i) msg.setUint16(1 + 2 * i, userNickName.charCodeAt(i), true);
-        send(msg)
-    }
-}
+    if (ws.readyState == ws.OPEN && null != userNickName) {
+        const buffer = prepareData(1 + 2 * userNickName.length);
+        buffer.setUint8(0, 0);
+        for (var i = 0; i < userNickName.length; ++i) buffer.setUint16(1 + 2 * i, userNickName.charCodeAt(i), true);
+        send(buffer)
+    };
+};
 
-function wsIsOpen() {
-    return null != ws && ws.readyState == ws.OPEN
-}
 
 function sendUint8(data) {
-    if (wsIsOpen()) {
-        var msg = prepareData(1);
-        msg.setUint8(0, data);
-        send(msg)
-    }
-}
+    if (ws.readyState == ws.OPEN) {
+        var buffer = prepareData(1);
+        buffer.setUint8(0, data);
+        send(buffer)
+    };
+};
 
 function reDraw() {
     Draw();
     window.requestAnimationFrame(reDraw)
-}
+};
 
 function canvasResize() {
     window.scrollTo(0, 0);
@@ -545,21 +559,21 @@ function canvasResize() {
     ctx.canvas.height = window.innerHeight;
     ctx.canvas.width = ctx.canvas.width;
     ctx.canvas.height = ctx.canvas.height;
-}
+};
 
 function viewRange() {
     var ratio;
     ratio = Math.max(ctx.canvas.height / 1080, ctx.canvas.width / 1920);
     return ratio * zoom;
-}
+};
 
 function calcViewZoom() {
     if (0 != playerCells.length) {
         for (var newViewZoom = 0, i = 0; i < playerCells.length; i++) newViewZoom += playerCells[i].size;
         newViewZoom = Math.pow(Math.min(64 / newViewZoom, 1), .4) * viewRange();
         viewZoom = (9 * viewZoom + newViewZoom) / 10
-    }
-}
+    };
+};
 
 function Draw() {
 
@@ -578,18 +592,18 @@ function Draw() {
         posY = c;
         posSize = viewZoom;
         nodeX = (nodeX + a) / 2;
-        nodeY = (nodeY + c) / 2
+        nodeY = (nodeY + c) / 2;
     } else {
         nodeX = (29 * nodeX + posX) / 30;
         nodeY = (29 * nodeY + posY) / 30;
         viewZoom = (9 * viewZoom + posSize * viewRange()) / 10;
-    }
+    };
 
     updateMouse();
     drawBackground();
 
     nodelist.sort(function (a, b) {
-        return a.size == b.size ? a.id - b.id : a.size - b.size
+        return a.size == b.size ? a.id - b.id : a.size - b.size;
     });
 
     ctx.save();
@@ -642,7 +656,7 @@ function Draw() {
     };
 
     // Keep chat board short
-    if (messages.length > 5) {
+    if (messages.length > 10) {
         messages.splice(0, messages.length - 1)
     }
 
@@ -659,7 +673,7 @@ function Draw() {
     };
 
     ctx.restore();
-}
+};
 
 function Borders() {
     if (options.borders === true) {
@@ -667,26 +681,28 @@ function Borders() {
         ctx.strokeStyle = "#" + options.borderColour;
         ctx.lineWidth = 20;
         ctx.beginPath();
+        
         ctx.moveTo(minX, minY);
         ctx.lineTo(maxX, minY);
         ctx.lineTo(maxX, maxY);
         ctx.lineTo(minX, maxY);
+
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
-    }
-}
+    };
+};
 
 function drawBackground() {
     ctx.fillStyle = "#" + options.bgColour;
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.save();
-}
+};
 
 function calcUserScore() {
     for (var score = 0, i = 0; i < playerCells.length; i++) score += playerCells[i].nSize * playerCells[i].nSize;
-    return score
-}
+    return score;
+};
 
 function Cell(id, x, y, size, color, name) {
     this.id = id;
@@ -698,7 +714,7 @@ function Cell(id, x, y, size, color, name) {
     this.pointsAcc = [];
     this.createPoints();
     this.name = name;
-}
+};
 
 Cell.prototype = {
     id: 0,
@@ -720,6 +736,7 @@ Cell.prototype = {
     delay: 0,
     destroyed: false,
     isVirus: false,
+
     destroy: function () {
         var tmp;
         for (tmp = 0; tmp < nodelist.length; tmp++)
@@ -739,15 +756,18 @@ Cell.prototype = {
         this.destroyed = true;
         Cells.push(this)
     },
+
     getNameSize: function () {
         return Math.max(~~(.3 * this.size), 24)
     },
+
     createPoints: function () {
         for (var samplenum = this.getNumPoints(); this.points.length > samplenum;) {
             var rand = ~~(Math.random() * this.points.length);
             this.points.splice(rand, 1);
             this.pointsAcc.splice(rand, 1)
-        }
+        };
+    
         if (0 == this.points.length && 0 < samplenum) {
             this.points.push({
                 ref: this,
@@ -756,7 +776,8 @@ Cell.prototype = {
                 y: this.y
             });
             this.pointsAcc.push(Math.random() - .5);
-        }
+        };
+
         while (this.points.length < samplenum) {
             var rand2 = ~~(Math.random() * this.points.length),
                 point = this.points[rand2];
@@ -767,18 +788,23 @@ Cell.prototype = {
                 y: point.y
             });
             this.pointsAcc.splice(rand2, 0, this.pointsAcc[rand2])
-        }
+        };
+
     },
+
     getNumPoints: function () {
         if (0 == this.id) return 16;
+
         var a = 10;
         if (20 > this.size) a = 0;
         if (this.isVirus) a = 40;
+
         var b = this.size;
         if (!this.isVirus)(b *= viewZoom);
         if (this.flag & 32)(b *= .5);
         return ~~Math.max(b, a);
     },
+
     updatePos: function () {
         if (0 == this.id) return 1;
         var a;
@@ -794,6 +820,7 @@ Cell.prototype = {
         this.size = b * (this.nSize - this.oSize) + this.oSize;
         return b;
     },
+
     shouldRender: function () {
         if (0 == this.id) {
             return true
@@ -801,6 +828,7 @@ Cell.prototype = {
             return !(this.x + this.size + 40 < nodeX - ctx.canvas.width / 2 / viewZoom || this.y + this.size + 40 < nodeY - ctx.canvas.height / 2 / viewZoom || this.x - this.size - 40 > nodeX + ctx.canvas.width / 2 / viewZoom || this.y - this.size - 40 > nodeY + ctx.canvas.height / 2 / viewZoom);
         }
     },
+
     drawOneCell: function (ctx) {
         if (this.shouldRender()) {
 
@@ -857,10 +885,11 @@ Cell.prototype = {
                     ctx.textBaseline = "middle";
                     ctx.fillText(~~(this.size * this.size / 100), this.x, this.y + 60);
                 };
-            }
+            };
             ctx.restore()
-        }
-    }
+        };
+    },
+    
 };
 
 Main();
