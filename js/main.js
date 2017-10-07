@@ -83,8 +83,9 @@ function Main() {
 
     setInterval(sendMouseMove, 1);
     canvasResize();
-    $("#overlays").fadeIn(600);
-}
+    $("#overlays").fadeIn(6E2);
+};
+
 
 function updateMouse() {
     X = (rawMouseX - ctx.canvas.width / 2) / viewZoom + nodeX;
@@ -103,6 +104,11 @@ function updateWindowFunctions() {
                 sendUint8(18);
                 break;
 
+            case 32:
+                // Space (Split)
+                sendUint8(17);
+                break;
+
             case 87:
                 // W
                 sendUint8(21);
@@ -115,9 +121,9 @@ function updateWindowFunctions() {
 
             case 27:
                 // ESC (Menu)
-                $("#overlays").fadeIn(600);;
+                $("#overlays").fadeIn(6E2);;
                 break;
-                
+
             case 13:
                 // Chat 
                 const textBox = document.getElementById("chat");
@@ -140,15 +146,6 @@ function updateWindowFunctions() {
                 break;
         };
 
-    };
-
-    window.onkeyup = function (event) {
-        switch (event.keyCode) {
-            case 32:
-                // Space (Split)
-                sendUint8(17);
-                break;
-        };
     };
 
     window.setNick = function (arg) {
@@ -193,7 +190,7 @@ function updateWindowFunctions() {
     });
 
     if (playerCells.length === 0 && isWatching === false) {
-        $("#overlays").fadeIn(600);
+        $("#overlays").fadeIn(6E2);
     };
 };
 
@@ -420,9 +417,9 @@ function updateNodes(msg, offset) {
             flags = msg.getUint8(offset++),
             flagVirus = !!(flags & 1),
             flagPlayer = !!(flags & 16);
-            flags & 2 && (offset += 4);
-            flags & 4 && (offset += 8);
-            flags & 8 && (offset += 16);
+        flags & 2 && (offset += 4);
+        flags & 4 && (offset += 8);
+        flags & 8 && (offset += 16);
 
         for (var char, name = "";;) {
             char = msg.getUint16(offset, true);
@@ -681,7 +678,7 @@ function Borders() {
         ctx.strokeStyle = "#" + options.borderColour;
         ctx.lineWidth = 20;
         ctx.beginPath();
-        
+
         ctx.moveTo(minX, minY);
         ctx.lineTo(maxX, minY);
         ctx.lineTo(maxX, maxY);
@@ -767,7 +764,7 @@ Cell.prototype = {
             this.points.splice(rand, 1);
             this.pointsAcc.splice(rand, 1)
         };
-    
+
         if (0 == this.points.length && 0 < samplenum) {
             this.points.push({
                 ref: this,
@@ -830,6 +827,7 @@ Cell.prototype = {
     },
 
     drawOneCell: function (ctx) {
+        const mass = ~~(this.size * this.size / 100);
         if (this.shouldRender()) {
 
             ctx.save();
@@ -868,7 +866,7 @@ Cell.prototype = {
                 ctx.stroke();
 
                 // Draw name
-                if (this.name && ~~(this.size * this.size / 100) >= 200) {
+                if (this.name && mass >= 200) {
                     ctx.globalAlpha = 1;
                     ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                     ctx.fillStyle = '#FFF';
@@ -877,19 +875,19 @@ Cell.prototype = {
                 };
 
                 // Draw size
-                if (~~(this.size * this.size / 100) >= 20) {
+                if (mass >= 20) {
                     ctx.globalAlpha = 1;
                     ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                     ctx.fillStyle = '#FFF';
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.fillText(~~(this.size * this.size / 100), this.x, this.y + 60);
+                    ctx.fillText(mass, this.x, this.y + 60);
                 };
             };
             ctx.restore()
         };
     },
-    
+
 };
 
 Main();
