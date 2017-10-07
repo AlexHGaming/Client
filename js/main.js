@@ -41,7 +41,8 @@ let options = {
     borders: false,
     bgColour: "222222",
     borderColour: "FFA500",
-    sectorColour: "1A1A1A"
+    sectorColour: "1A1A1A",
+    hideFood: false,
 };
 
 let fps = {
@@ -163,6 +164,10 @@ function updateWindowFunctions() {
     };
 
     // Handle options
+    
+    $("#food").change(function () {
+        options.hideFood = $(this).is(':checked');
+    });
 
     $("#delay").on("input", function () {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
@@ -828,7 +833,13 @@ Cell.prototype = {
 
     drawOneCell: function (ctx) {
         const mass = ~~(this.size * this.size / 100);
+        const isFood = (!this.isVirus && mass < 5);
+
         if (this.shouldRender()) {
+
+            if (options.hideFood === true && isFood) {
+                return;
+            };
 
             ctx.save();
             c = this.updatePos();
@@ -861,9 +872,11 @@ Cell.prototype = {
             if (0 != this.id) {
 
                 // Cell stroke
-                ctx.strokeStyle = this.color;
-                ctx.globalAlpha = .7;
-                ctx.stroke();
+                if (mass > 20) {
+                    ctx.strokeStyle = this.color;
+                    ctx.globalAlpha = .7;
+                    ctx.stroke();
+                };
 
                 // Draw name
                 if (this.name && mass >= 200) {
