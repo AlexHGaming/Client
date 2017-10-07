@@ -43,6 +43,7 @@ let options = {
     borderColour: "FFA500",
     sectorColour: "1A1A1A",
     hideFood: false,
+    ERTP: false,
 };
 
 let fps = {
@@ -117,7 +118,34 @@ function updateWindowFunctions() {
 
             case 80:
                 // P (Collect pellets)
+                if (options.ERTP === false) {
+                    return;
+                };
                 sendUint8(25);
+                break;
+
+            case 84:
+                // T (Freeze minions)
+                if (options.ERTP === false) {
+                    return;
+                };
+                sendUint8(24);
+                break;
+
+            case 82:
+                // R (Minion eject)
+                if (options.ERTP === false) {
+                    return;
+                };
+                sendUint8(23);
+                break;
+
+            case 69:
+                // E (Minion split)
+                if (options.ERTP === false) {
+                    return;
+                };
+                sendUint8(22);
                 break;
 
             case 27:
@@ -164,14 +192,17 @@ function updateWindowFunctions() {
     };
 
     // Handle options
-    
-    $("#food").change(function () {
-        options.hideFood = $(this).is(':checked');
-    });
-
     $("#delay").on("input", function () {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
         options.delay = Number($("#delay").val());
+    });
+
+    $("#food").change(function () {
+        options.hideFood = $(this).is(':checked');
+    });
+    
+    $("#ERTP").change(function () {
+        options.ERTP = $(this).is(':checked');
     });
 
     $("#sectors").change(function () {
@@ -220,6 +251,7 @@ function connect(url) {
         console.log("Error " + e);
     }
     ws.onopen = function () {
+        resetVars();
         var buffer = prepareData(5);
         buffer.setUint8(0, 254);
         buffer.setUint32(1, 4, true);
@@ -234,6 +266,7 @@ function connect(url) {
         }, 1000);
     }
     ws.onclose = function (e) {
+        resetVars();
         connect(request);
         console.log("Disconnected from server!");
     }
