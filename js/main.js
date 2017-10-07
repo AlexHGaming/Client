@@ -79,7 +79,7 @@ function Main() {
     }
     setInterval(sendMouseMove, 1);
     canvasResize();
-    showOverlays(true)
+    $("#overlays").fadeIn(600);
 }
 
 function updateMouse() {
@@ -87,9 +87,6 @@ function updateMouse() {
     Y = (rawMouseY - ctx.canvas.height / 2) / viewZoom + nodeY
 }
 
-function hideOverlays() {
-    $("#overlays").hide();
-}
 
 function updateWindowFunctions() {
 
@@ -97,26 +94,26 @@ function updateWindowFunctions() {
 
     window.onkeydown = function (event) {
         switch (event.keyCode) {
-            case 32:
-                // Space (Split)
-                sendUint8(17);
-                break;
             case 81:
                 // Q
                 sendUint8(18);
                 break;
+
             case 87:
                 // W
                 sendUint8(21);
                 break;
+
             case 80:
                 // P (Collect pellets)
                 sendUint8(25);
                 break;
+
             case 27:
                 // ESC (Menu)
-                showOverlays(true);
+                $("#overlays").fadeIn(600);;
                 break;
+                
             case 13:
                 // Chat 
                 const textBox = document.getElementById("chat");
@@ -141,8 +138,17 @@ function updateWindowFunctions() {
 
     };
 
+    window.onkeyup = function (event) {
+        switch (event.keyCode) {
+            case 32:
+                // Space (Split)
+                sendUint8(17);
+                break;
+        }
+    }
+
     window.setNick = function (arg) {
-        hideOverlays();
+        $("#overlays").hide();
         userNickName = arg;
         sendNickName();
         userScore = 0
@@ -152,7 +158,7 @@ function updateWindowFunctions() {
         userNickName = null;
         isWatching = true;
         sendUint8(1);
-        hideOverlays()
+        $("#overlays").hide();
     };
 
     // Handle options
@@ -182,15 +188,11 @@ function updateWindowFunctions() {
         options.sectorColour = $("#sectorColour").val();
     });
 
-    if (playerCells.length === 0 && isWatching === false ) {
-        showOverlays(true)
+    if (playerCells.length === 0 && isWatching === false) {
+        $("#overlays").fadeIn(600);
     }
 }
 
-function showOverlays(arg) {
-    userNickName = null;
-    $("#overlays").fadeIn(600);
-}
 
 function resetVars() {
     nodesOnScreen = [];
