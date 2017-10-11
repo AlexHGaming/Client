@@ -304,7 +304,7 @@ function handleMessage(msg) {
     var offset = 0,
         setCustomLB = false;
 
-    /** Pakcet ID's
+    /** Packet ID's
      * 16: Tick (Update Nodes).
      * 17: Position update 
      * 20: Clear Nodes (Clears nodes that are currently on screen).
