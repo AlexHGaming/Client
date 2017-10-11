@@ -682,7 +682,7 @@ function Draw() {
     // Very simple leaderboard
     for (var i = 0; i < leaderboard.length; i++) {
         const section = leaderboard[i];
-        const name = (i + 1) + ". " + section.name;
+        const name = (i + 1) + ". " + (section.name === "" ? "An Unnamed Cell" : section.name);
         ctx.globalAlpha = .8;
         ctx.strokeStyle = "#000"
         ctx.font = '15px Tahoma';
