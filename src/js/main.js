@@ -535,10 +535,10 @@ function Sectors() {
         ctx.font = barWidth * 0.6 + "px Russo One";
         ctx.fillStyle = "#" + options.sectorColour;
 
-        
+
         while (j < 5) {
             let i = 0;
-            while (i < 5) {
+            while (5 > i) {
                 ctx.fillText(second[j] + (i + 1), x + barWidth * i + barWidth / 2, y + h * j + h / 2);
                 i++
             };
@@ -653,10 +653,22 @@ function Draw() {
     ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
     ctx.scale(viewZoom, viewZoom);
     ctx.translate(-nodeX, -nodeY);
+
     Sectors();
     Borders();
-    for (d = 0; d < Cells.length; d++) Cells[d].drawOneCell(ctx);
-    for (d = 0; d < nodelist.length; d++) nodelist[d].drawOneCell(ctx);
+
+    d = 0;
+    while (d < Cells.length) {
+        Cells[d].drawOneCell(ctx)
+        d++;
+    };
+
+    d = 0
+    while (d < nodelist.length) {
+        nodelist[d].drawOneCell(ctx)
+        d++;
+    };
+
     ctx.restore();
     userScore = Math.max(userScore, calcUserScore());
 
