@@ -480,7 +480,7 @@ function updateNodes(msg, offset) {
             node.oSize = node.size;
             node.color = colorstr;
         } else {
-            node = new Cell(nodeid, posX, posY, size, colorstr, name);
+            node = new Cell(nodeid, posX, posY, size * 1.5, colorstr, name);
             nodelist.push(node);
             nodes[nodeid] = node;
             node.ka = posX;
