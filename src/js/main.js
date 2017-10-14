@@ -520,12 +520,12 @@ function Sectors() {
     // Taken from AgarPlus
 
     if (options.sectors === true) {
-        ctx.strokeRect(minX, maxY, 500, 500);
         const x = Math.round(minX) + 40;
         const y = Math.round(minY) + 40;
         const second = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
         const barWidth = (Math.round(maxX) - 90 - x) / 5;
         const h = (Math.round(maxY) - 40 - y) / 5;
+        let j = 0;
 
         ctx.save();
         ctx.beginPath();
@@ -535,25 +535,28 @@ function Sectors() {
         ctx.font = barWidth * 0.6 + "px Russo One";
         ctx.fillStyle = "#" + options.sectorColour;
 
-        var j = 0;
-        for (; 5 > j; j++) {
-            var i = 0;
-            for (; 5 > i; i++) {
+        
+        while (j < 5) {
+            let i = 0;
+            while (i < 5) {
                 ctx.fillText(second[j] + (i + 1), x + barWidth * i + barWidth / 2, y + h * j + h / 2);
+                i++
             };
+            j++;
         };
 
         ctx.lineWidth = 100;
         ctx.strokeStyle = "#1A1A1A";
-
         j = 0;
-        for (; 5 > j; j++) {
-            i = 0;
-            for (; 5 > i; i++) {
-                ctx.strokeRect(x + barWidth * i, y + h * j, barWidth, h);
-            };
-        };
 
+        while (j < 5) {
+            i = 0;
+            while (i < 5) {
+                ctx.strokeRect(x + barWidth * i, y + h * j, barWidth, h);
+                i++
+            };
+            j++;
+        };
         ctx.stroke();
         ctx.restore();
     };
@@ -657,7 +660,7 @@ function Draw() {
     ctx.restore();
     userScore = Math.max(userScore, calcUserScore());
 
-    //Score
+    // Score
     let scoreText = "Score " + ~~(userScore / 100);
     ctx.globalAlpha = 1;
     ctx.font = '20px Tahoma';
@@ -748,7 +751,8 @@ function Cell(id, x, y, size, color, name) {
     this.id = id;
     this.ox = this.x = x;
     this.oy = this.y = y;
-    this.oSize = this.size = size;
+    this.oSize = size;
+    this.size = size;
     this.color = color;
     this.points = [];
     this.pointsAcc = [];
