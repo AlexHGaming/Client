@@ -480,7 +480,7 @@ function updateNodes(msg, offset) {
             node.oSize = node.size;
             node.color = colorstr;
         } else {
-            node = new Cell(nodeid, posX, posY, size * 1.5, colorstr, name);
+            node = new Cell(nodeid, posX, posY, size * 1.2, colorstr, name);
             nodelist.push(node);
             nodes[nodeid] = node;
             node.ka = posX;
@@ -945,7 +945,7 @@ Cell.prototype = {
                 };
 
                 // Draw mass
-                if (mass >= 20) {
+                if (mass >= 200) {
                     ctx.globalAlpha = 1;
                     ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                     ctx.fillStyle = '#FFF';
