@@ -12,13 +12,13 @@ Version **0.0.6**
 ![Skins](https://i.imgur.com/dNqdR0m.png)
 
 > Gameplay
-![Pop](https://i.imgur.com/B26mcsS.png)
+![Gameplay](https://i.imgur.com/UZBNxGE.png)
 
 > Main page
 ![Main](https://i.imgur.com/Ovn1DKk.png)
 
 > Settings
-![Settings](https://i.imgur.com/mkSzWUw.png) 
+![Settings](https://i.imgur.com/fR8qaew.png) 
 
 > Theming
 ![Themes](https://i.imgur.com/hGPnAAI.png)
