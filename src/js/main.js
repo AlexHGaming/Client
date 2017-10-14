@@ -37,6 +37,7 @@ let maxY = 0;
 let noRanking = false;
 let options = {
     delay: 120,
+    squareMode: false,
     sectors: false,
     borders: false,
     bgColour: "222222",
@@ -200,7 +201,11 @@ function updateWindowFunctions() {
     $("#food").change(function () {
         options.hideFood = $(this).is(':checked');
     });
-    
+
+    $("#sqMode").change(function () {
+        options.squareMode = $(this).is(':checked');
+    });
+
     $("#ERTP").change(function () {
         options.ERTP = $(this).is(':checked');
     });
@@ -778,7 +783,7 @@ Cell.prototype = {
             if (nodelist[tmp] == this) {
                 nodelist.splice(tmp, 1);
                 break
-            }
+            };
         delete nodes[this.id];
         tmp = playerCells.indexOf(this);
         if (-1 != tmp) {
@@ -792,12 +797,10 @@ Cell.prototype = {
         Cells.push(this)
     },
 
-    getNameSize: function () {
-        return Math.max(~~(.3 * this.size), 24)
-    },
-
     createPoints: function () {
-        for (var samplenum = this.getNumPoints(); this.points.length > samplenum;) {
+        const samplenum = this.getNumPoints()
+
+        while (this.points.length > samplenum) {
             var rand = ~~(Math.random() * this.points.length);
             this.points.splice(rand, 1);
             this.pointsAcc.splice(rand, 1)
@@ -846,7 +849,6 @@ Cell.prototype = {
         a = (timestamp - this.updateTime) / options.delay;
         a = 0 > a ? 0 : 1 < a ? 1 : a;
         var b = 0 > a ? 0 : 1 < a ? 1 : a;
-        this.getNameSize();
         if (this.destroyed && 1 <= b) {
             var c = Cells.indexOf(this); - 1 != c && Cells.splice(c, 1)
         }
@@ -882,7 +884,13 @@ Cell.prototype = {
 
             // Draw nodes
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, .1, 2 * Math.PI, false);
+
+            if (options.squareMode === true) {
+                ctx.rect(this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
+            } else {
+                ctx.arc(this.x, this.y, this.size, .1, Math.PI * 2, false);
+            };
+
             ctx.closePath();
             ctx.fill();
 
@@ -897,7 +905,7 @@ Cell.prototype = {
 
                 ctx.save();
                 ctx.clip();
-                ctx.drawImage(skin, this.x - this.size, this.y - this.size, 2 * this.size, 2 * this.size);
+                ctx.drawImage(skin, this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                 ctx.restore();
 
             }
@@ -905,9 +913,9 @@ Cell.prototype = {
             if (0 != this.id) {
 
                 // Cell stroke
-                if (mass > 20) {
+                if (mass >= 20) {
                     ctx.strokeStyle = this.color;
-                    ctx.globalAlpha = .7;
+                    ctx.globalAlpha = .6;
                     ctx.stroke();
                 };
 
