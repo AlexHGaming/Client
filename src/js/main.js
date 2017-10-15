@@ -480,7 +480,7 @@ function updateNodes(msg, offset) {
             node.oSize = node.size;
             node.color = colorstr;
         } else {
-            node = new Cell(nodeid, posX, posY, size * 1.2, colorstr, name);
+            node = new Cell(nodeid, posX, posY, size , colorstr, name);
             nodelist.push(node);
             nodes[nodeid] = node;
             node.ka = posX;
@@ -766,16 +766,11 @@ function Cell(id, x, y, size, color, name) {
     this.oSize = size;
     this.size = size;
     this.color = color;
-    this.points = [];
-    this.pointsAcc = [];
-    this.createPoints();
     this.name = name;
 };
 
 Cell.prototype = {
     id: 0,
-    points: null,
-    pointsAcc: null,
     name: null,
     x: 0,
     y: 0,
@@ -811,52 +806,6 @@ Cell.prototype = {
         }
         this.destroyed = true;
         Cells.push(this)
-    },
-
-    createPoints: function () {
-        const samplenum = this.getNumPoints()
-
-        while (this.points.length > samplenum) {
-            var rand = ~~(Math.random() * this.points.length);
-            this.points.splice(rand, 1);
-            this.pointsAcc.splice(rand, 1)
-        };
-
-        if (0 == this.points.length && 0 < samplenum) {
-            this.points.push({
-                ref: this,
-                size: this.size,
-                x: this.x,
-                y: this.y
-            });
-            this.pointsAcc.push(Math.random() - .5);
-        };
-
-        while (this.points.length < samplenum) {
-            var rand2 = ~~(Math.random() * this.points.length),
-                point = this.points[rand2];
-            this.points.splice(rand2, 0, {
-                ref: this,
-                size: point.size,
-                x: point.x,
-                y: point.y
-            });
-            this.pointsAcc.splice(rand2, 0, this.pointsAcc[rand2])
-        };
-
-    },
-
-    getNumPoints: function () {
-        if (0 == this.id) return 16;
-
-        var a = 10;
-        if (20 > this.size) a = 0;
-        if (this.isVirus) a = 40;
-
-        var b = this.size;
-        if (!this.isVirus)(b *= viewZoom);
-        if (this.flag & 32)(b *= .5);
-        return ~~Math.max(b, a);
     },
 
     updatePos: function () {
@@ -902,8 +851,10 @@ Cell.prototype = {
             ctx.beginPath();
 
             if (options.squareMode === true) {
+                // Square
                 ctx.rect(this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
             } else {
+                // Circle
                 ctx.arc(this.x, this.y, this.size, .1, Math.PI * 2, false);
             };
 
