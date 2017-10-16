@@ -1,12 +1,16 @@
 # Changelog
-
-### **_26/09/17_**
+### **_15/10/17
+```MD
+1. Version Bump **0.0.7**
+______
+```
+### **_13/10/17_**
 
 ```MD
 V0.0.5
 ______
 
-1. Implement chat.
+1. Implemented Square Mode.
 ```
 
 ### **_26/09/17_**
@@ -15,7 +19,16 @@ ______
 V0.0.5
 ______
 
-1. Implement simple leaderboard.
+1. Implemented chat.
+```
+
+### **_26/09/17_**
+
+```MD
+V0.0.5
+______
+
+1. Implemented simple leaderboard.
 ```
 
 ### **_26/09/17_**
@@ -36,6 +49,5 @@ ______
 
 **TODO**
 
-1. Implement leaderboard.
-2. Implement chat.
+
 ```
