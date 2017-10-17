@@ -1,16 +1,83 @@
-body,
-html {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+#nick {
+    width: 65%;
+    float: left
 }
 
-form {
+#watchBtn {
+    width: 33%;
+    float: right
+}
+
+
+#main {
+    position: absolute;    
+    width: 350px;
+    background-size: 350px;
+    background-color: rgb(51, 51, 51);
+    margin: 10px -50% 10px auto;
+    padding: 5px 15px;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%)
+}
+
+#chat {
+    bottom: 10px;
+    background: rgba(0, 0, 0, .2);
+    border: 0;
+    outline: 0;
+    color: #FFF;
+    height: 30px;
+    text-indent: 12px;
+    position: fixed;
+    bottom: 20;
+    left: 20;
+    width: 300px
+}
+
+#chat:focus {
+    background: rgba(0, 0, 0, .5)
+}
+
+#serverPanel {
+    width: 300px;
+    height: 350px;
+    background-color: rgb(51, 51, 51);
+    margin: 10px;
+    padding: 5px 15px 5px 15px;
+    position: absolute;
+    top: 46%;
+    left: -50%;
+    margin-right: -70%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.checkbox label {
+    margin-right: 10px
+}
+
+.playButton,
+.watchButton {
     display: block;
-    margin-top: 0em;
-    margin-bottom: 0;
+    height: 35px
+}
+
+.playButton {
+    width: 65%;
+    float: left
+}
+
+.watchButton {
+    display: block;
+    float: right
+}
+
+canvas {
+    position: absolute;
 }
 
 input[type=range] {
@@ -29,95 +96,4 @@ input[type=range]::-webkit-slider-thumb {
     cursor: pointer;
     margin-top: -14px;
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-}
-
-canvas {
-    position: absolute;
-}
-
-#main {
-    position: absolute;
-}
-
-.checkbox label {
-    margin-right: 10px
-}
-
-form {
-    margin-bottom: 0
-}
-
-.btn-play,
-.btn-settings,
-.btn-watch {
-    display: block;
-    height: 35px
-}
-
-.btn-play {
-    width: 65%;
-    float: left
-}
-
-.btn-settings {
-    width: 13%;
-    float: right
-}
-
-.btn-watch {
-    display: block;
-    float: right
-}
-
-#nick {
-    width: 65%;
-    float: left
-}
-
-#watchBtn {
-    width: 33%;
-    float: right
-}
-
-#main:hover {
-    border-top: #000FFF;
-    border-bottom: #000FFF;
-    border-left: #000FFF;
-    border-right: #000FFF;
-}
-
-#main {
-    width: 350px;
-    background-size: 350px;
-    background-color: rgb(51, 51, 51);
-    margin: 10px -50% 10px auto;
-    padding: 5px 15px;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%)
-}
-
-#chat {
-    -webkit-transition: all .5s ease-in-out;
-    -moz-transition: all .5s ease-in-out;
-    -o-transition: all .5s ease-in-out;
-    transition: all .5s ease-in-out;
-    z-index: 1;
-    bottom: 10px;
-    background: rgba(0, 0, 0, .2);
-    border: 0;
-    outline: 0;
-    color: #FFF;
-    height: 30px;
-    text-indent: 12px;
-    position: fixed;
-    bottom: 20;
-    left: 20;
-    width: 300px
-}
-
-#chat:focus {
-    background: rgba(0, 0, 0, .5)
 }

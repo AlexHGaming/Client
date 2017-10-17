@@ -1,4 +1,4 @@
-//let teamScores = null;
+let teamScores = [];
 let request = prompt("Enter server address:port", "ws://127.0.0.1:443");
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
@@ -371,6 +371,7 @@ function handleMessage(msg) {
                     teamScores.push(msg.getFloat32(offset, true));
                     offset += 4;
                 }
+                console.log(teamScores)
                 break;*/
         case 64:
             leftPos = msg.getFloat64(offset, true);
