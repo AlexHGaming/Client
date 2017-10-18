@@ -1,5 +1,4 @@
 let teamScores = [];
-let request = prompt("Enter server address:port", "ws://127.0.0.1:443");
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let messages = [];
@@ -62,10 +61,6 @@ let fps = {
         return result;
     }
 };
-
-$(document).ready(function () {
-    connect(request);
-});
 
 function Main() {
     document.getElementById("canvas").focus();
@@ -247,7 +242,7 @@ function resetVars() {
     userScore = 0;
 };
 
-function connect(url) {
+/*function connect(url) {
     console.log("Connecting to " + url);
     ws = new WebSocket(url);
     ws.binaryType = "arraybuffer";
@@ -275,7 +270,40 @@ function connect(url) {
         connect(request);
         console.log("Disconnected from server!");
     }
-}
+}*/
+
+function connect(url) {
+    ws = new WebSocket(url);
+    ws.binaryType = "arraybuffer";
+    ws.onmessage = onWsMessage.bind(this);
+    ws.onopen = onOpen.bind(this);
+    ws.onerror = onError.bind(this);
+    ws.onclose = onClose.bind(this);
+};
+
+function onOpen() {
+    resetVars();
+
+    var buffer = prepareData(5);
+    buffer.setUint8(0, 254);
+    buffer.setUint32(1, 4, true);
+    send(buffer);
+    
+    var buffer = prepareData(5);
+    buffer.setUint8(0, 255);
+    buffer.setUint32(1, 1332175218, true);
+    send(buffer);
+
+    console.log("Connected");
+};
+
+function onError(event) {
+    console.log(event.code);
+};
+
+function onClose() {
+    console.log("Disconnected from server");
+};
 
 function handleWheel(event) {
     zoom *= Math.pow(.9, event.wheelDelta / -120 || event.detail || 0); - 1 > zoom && (zoom = -1);
@@ -291,6 +319,10 @@ function prepareData(data) {
 };
 
 function send(data) {
+    if (!ws) {
+        return;
+    };
+
     ws.send(data.buffer)
 };
 
@@ -363,7 +395,7 @@ function handleMessage(msg) {
                 });
             };
             break;
-            /*case 50:
+            case 50:
                 teamScores = [];
                 var LBteamNum = msg.getUint32(offset, true);
                 offset += 4;
@@ -372,7 +404,7 @@ function handleMessage(msg) {
                     offset += 4;
                 }
                 console.log(teamScores)
-                break;*/
+                break;
         case 64:
             leftPos = msg.getFloat64(offset, true);
             offset += 8;
@@ -564,7 +596,7 @@ function Sectors() {
 };
 
 function sendMouseMove() {
-    if (ws.readyState == ws.OPEN) {
+    if (!ws || ws.readyState == ws.OPEN) {
         const buffer = prepareData(21);
         buffer.setUint8(0, 16);
         buffer.setFloat64(1, X, true);
