@@ -242,36 +242,6 @@ function resetVars() {
     userScore = 0;
 };
 
-/*function connect(url) {
-    console.log("Connecting to " + url);
-    ws = new WebSocket(url);
-    ws.binaryType = "arraybuffer";
-    ws.onmessage = onWsMessage;
-    ws.onerror = function (e) {
-        console.log("Error " + e);
-    }
-    ws.onopen = function () {
-        resetVars();
-        var buffer = prepareData(5);
-        buffer.setUint8(0, 254);
-        buffer.setUint32(1, 4, true);
-        send(buffer);
-        var buffer = prepareData(5);
-        buffer.setUint8(0, 255);
-        buffer.setUint32(1, 1332175218, true);
-        send(buffer);
-
-        setTimeout(function () {
-            console.log('Connected to server!');
-        }, 1000);
-    }
-    ws.onclose = function (e) {
-        resetVars();
-        connect(request);
-        console.log("Disconnected from server!");
-    }
-}*/
-
 function connect(url) {
     ws = new WebSocket(url);
     ws.binaryType = "arraybuffer";
@@ -288,7 +258,7 @@ function onOpen() {
     buffer.setUint8(0, 254);
     buffer.setUint32(1, 4, true);
     send(buffer);
-    
+
     var buffer = prepareData(5);
     buffer.setUint8(0, 255);
     buffer.setUint32(1, 1332175218, true);
