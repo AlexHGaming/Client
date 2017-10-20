@@ -97,9 +97,9 @@ function updateWindowFunctions() {
     // Window functions
 
     window.onkeydown = function (event) {
-        if (isTyping === true) {
-          return;  
-        };
+        if (isTyping === true && event.keyCode !== 13)
+            return;
+
         switch (event.keyCode) {
             case 81:
                 // Q
@@ -159,6 +159,7 @@ function updateWindowFunctions() {
 
                 if (textBox.value.length === 0) {
                     textBox.focus();
+                    isTyping = true;
                 } else {
                     var buffer = prepareData(2 + 2 * textBox.value.length);
                     var offset = 0;
@@ -169,7 +170,8 @@ function updateWindowFunctions() {
                         offset += 2;
                     }
                     send(buffer);
-                    textBox.blur();                    
+                    textBox.blur();
+                    isTyping = false;
                 }
                 textBox.value = "";
                 break;
