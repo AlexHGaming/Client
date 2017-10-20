@@ -159,20 +159,26 @@ function updateWindowFunctions() {
 
                 if (textBox.value.length === 0) {
                     textBox.focus();
-                    isTyping = true;
                 } else {
-                    var buffer = prepareData(2 + 2 * textBox.value.length);
-                    var offset = 0;
-                    buffer.setUint8(offset++, 99);
-                    buffer.setUint8(offset++, 0);
-                    for (var i = 0; i < textBox.value.length; ++i) {
-                        buffer.setUint16(offset, textBox.value.charCodeAt(i), true);
-                        offset += 2;
-                    }
-                    send(buffer);
-                    textBox.blur();
-                    isTyping = false;
-                }
+                    switch (textBox.value) {
+                        case "/sectors":
+                            options.sectors = options.sectors === true ? false : true;
+                            break;
+                        default:
+                            var buffer = prepareData(2 + 2 * textBox.value.length);
+                            var offset = 0;
+                            buffer.setUint8(offset++, 99);
+                            buffer.setUint8(offset++, 0);
+                            for (var i = 0; i < textBox.value.length; ++i) {
+                                buffer.setUint16(offset, textBox.value.charCodeAt(i), true);
+                                offset += 2;
+                            }
+                            send(buffer);
+                            textBox.blur();
+                            break;
+                    };
+                };
+                
                 textBox.value = "";
                 break;
         };
@@ -194,6 +200,15 @@ function updateWindowFunctions() {
     };
 
     // Handle options
+
+    $("#chat").on("blur", function () {
+        isTyping = false;
+    });
+
+    $("#chat").on("focus", function () {
+        isTyping = true;
+    });
+
     $("#delay").on("input", function () {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
         options.delay = Number($("#delay").val());
@@ -720,9 +735,9 @@ function Draw() {
     };
 
     // Keep chat board short
-    if (messages.length > 10) {
-        messages.splice(0, messages.length - 1)
-    }
+    if (messages.length >= 15) {
+        messages.splice(0, messages.length)
+    };
 
     // Chat board
     for (var i = 0; i < messages.length; i++) {
