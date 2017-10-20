@@ -32,6 +32,7 @@ let minX = 0;
 let minY = 0;
 let maxX = 0;
 let isWatching = false;
+let isTyping = false;
 let maxY = 0;
 let noRanking = false;
 let options = {
@@ -96,6 +97,9 @@ function updateWindowFunctions() {
     // Window functions
 
     window.onkeydown = function (event) {
+        if (isTyping === true) {
+          return;  
+        };
         switch (event.keyCode) {
             case 81:
                 // Q
@@ -164,9 +168,9 @@ function updateWindowFunctions() {
                         buffer.setUint16(offset, textBox.value.charCodeAt(i), true);
                         offset += 2;
                     }
-                    send(buffer)
+                    send(buffer);
+                    textBox.blur();                    
                 }
-
                 textBox.value = "";
                 break;
         };
@@ -365,16 +369,16 @@ function handleMessage(msg) {
                 });
             };
             break;
-            case 50:
-                teamScores = [];
-                var LBteamNum = msg.getUint32(offset, true);
+        case 50:
+            teamScores = [];
+            var LBteamNum = msg.getUint32(offset, true);
+            offset += 4;
+            for (var i = 0; i < LBteamNum; ++i) {
+                teamScores.push(msg.getFloat32(offset, true));
                 offset += 4;
-                for (var i = 0; i < LBteamNum; ++i) {
-                    teamScores.push(msg.getFloat32(offset, true));
-                    offset += 4;
-                }
-                console.log(teamScores)
-                break;
+            }
+            console.log(teamScores)
+            break;
         case 64:
             leftPos = msg.getFloat64(offset, true);
             offset += 8;
@@ -483,7 +487,7 @@ function updateNodes(msg, offset) {
             node.oSize = node.size;
             node.color = colorstr;
         } else {
-            node = new Cell(nodeid, posX, posY, size , colorstr, name);
+            node = new Cell(nodeid, posX, posY, size, colorstr, name);
             nodelist.push(node);
             nodes[nodeid] = node;
             node.ka = posX;
@@ -727,7 +731,7 @@ function Draw() {
         ctx.globalAlpha = .8;
         ctx.font = '15px Tahoma';
         ctx.fillStyle = message.color;
-        ctx.fillText(author + (author == "SERVER" ? ": " : " said ") + content, (ctx.canvas.width / ctx.canvas.height) + 20, (ctx.canvas.height / ctx.canvas.width) + ctx.canvas.height - 70 - 24 * i);
+        ctx.fillText(author + ": " + content, (ctx.canvas.width / ctx.canvas.height) + 20, (ctx.canvas.height / ctx.canvas.width) + ctx.canvas.height - 70 - 24 * i);
     };
 
     ctx.restore();
