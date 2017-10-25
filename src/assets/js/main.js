@@ -50,7 +50,7 @@ let options = {
 let fps = {
     startTime: 0,
     frameNumber: 0,
-    getFPS: function () {
+    getFPS: function() {
         this.frameNumber++;
         var d = new Date().getTime(),
             currentTime = (d - this.startTime) / 1000,
@@ -67,7 +67,7 @@ function Main() {
     document.getElementById("canvas").focus();
     canvas = document.getElementById("canvas");
 
-    canvas.onmousemove = function (event) {
+    canvas.onmousemove = function(event) {
         rawMouseX = event.clientX;
         rawMouseY = event.clientY;
         updateMouse()
@@ -96,7 +96,7 @@ function updateWindowFunctions() {
 
     // Window functions
 
-    window.onkeydown = function (event) {
+    window.onkeydown = function(event) {
         if (isTyping === true && event.keyCode !== 13)
             return;
 
@@ -178,21 +178,21 @@ function updateWindowFunctions() {
                             break;
                     };
                 };
-                
+
                 textBox.value = "";
                 break;
         };
 
     };
 
-    window.setNick = function (arg) {
+    window.setNick = function(arg) {
         $("#overlays").hide();
         userNickName = arg;
         sendNickName();
         userScore = 0
     };
 
-    window.watch = function () {
+    window.watch = function() {
         userNickName = null;
         isWatching = true;
         sendUint8(1);
@@ -201,51 +201,59 @@ function updateWindowFunctions() {
 
     // Handle options
 
-    $("#chat").on("blur", function () {
+    $("#chat").on("blur", function() {
         isTyping = false;
     });
 
-    $("#chat").on("focus", function () {
+    $("#chat").on("focus", function() {
         isTyping = true;
     });
 
-    $("#delay").on("input", function () {
+    $("#delay").on("input", function() {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
         options.delay = Number($("#delay").val());
     });
 
-    $("#food").change(function () {
+    $("#food").change(function() {
         options.hideFood = $(this).is(':checked');
     });
 
-    $("#sqMode").change(function () {
+    $("#sqMode").change(function() {
         options.squareMode = $(this).is(':checked');
     });
 
-    $("#ERTP").change(function () {
+    $("#ERTP").change(function() {
         options.ERTP = $(this).is(':checked');
     });
 
-    $("#sectors").change(function () {
+    $("#sectors").change(function() {
         options.sectors = $(this).is(':checked');
     });
 
-    $("#borders").change(function () {
+    $("#borders").change(function() {
         options.borders = $(this).is(':checked');
     });
 
-    $("#bgColour").change(function () {
+    $("#bgColour").change(function() {
         options.bgColour = $("#bgColour").val();
     });
 
-    $("#borderColour").change(function () {
+    $("#borderColour").change(function() {
         options.borderColour = $("#borderColour").val();
     });
 
-    $("#sectorColour").change(function () {
+    $("#sectorColour").change(function() {
         options.sectorColour = $("#sectorColour").val();
     });
-
+    $("#nick").change(function() {
+        localStorage.setItem("nick", document.getElementById("nick").value);
+    })
+    $("#skinUrl").change(function() {
+        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
+    })
+    $('#nick').val(localStorage.getItem('nick'));
+    $('#skinUrl').val(localStorage.getItem('skinurl'));
+    
     if (playerCells.length === 0 && isWatching === false) {
         $("#overlays").fadeIn(6E2);
     };
@@ -669,7 +677,7 @@ function Draw() {
     updateMouse();
     drawBackground();
 
-    nodelist.sort(function (a, b) {
+    nodelist.sort(function(a, b) {
         return a.size == b.size ? a.id - b.id : a.size - b.size;
     });
 
@@ -812,7 +820,7 @@ Cell.prototype = {
     destroyed: false,
     isVirus: false,
 
-    destroy: function () {
+    destroy: function() {
         var tmp;
         for (tmp = 0; tmp < nodelist.length; tmp++)
             if (nodelist[tmp] == this) {
@@ -832,7 +840,7 @@ Cell.prototype = {
         Cells.push(this)
     },
 
-    updatePos: function () {
+    updatePos: function() {
         if (0 == this.id) return 1;
         var a;
         a = (timestamp - this.updateTime) / options.delay;
@@ -847,7 +855,7 @@ Cell.prototype = {
         return b;
     },
 
-    shouldRender: function () {
+    shouldRender: function() {
         if (0 == this.id) {
             return true
         } else {
@@ -855,7 +863,7 @@ Cell.prototype = {
         }
     },
 
-    drawOneCell: function (ctx) {
+    drawOneCell: function(ctx) {
         const mass = ~~(this.size * this.size / 100);
         const isFood = (!this.isVirus && mass < 5);
 
