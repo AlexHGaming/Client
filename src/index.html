@@ -145,6 +145,16 @@
         </div>
 
     </div>
+<script>
+    		$("#nick").change(function() {
+		localStorage.setItem("nick", document.getElementById("nick").value);
+		})
+		$("#skinUrl").change(function() {
+		localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
+		})
+		$('#nick').val(localStorage.getItem('nick'));
+		$('#skinUrl').val(localStorage.getItem('skinurl'));
+</script>
 </body>
 <input id="chat" maxlength="200" placeholder="Enter to chat" type="text">
 
