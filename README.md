@@ -6,8 +6,8 @@ Version **0.0.7**
 # Connecting
 
 1. In order to connect to a server you will need to use the `connect` function.
+<br>
 To do this you need to access the developer console in your browser.
-
 ##### This is usually done by pressing f12 on your keyboard.
 
 2. Use this snippet to connect to your server:
@@ -21,6 +21,14 @@ connect("ws://IP:PORT");
 >---
 
 <br>
+
+# Client Commands
+
+When you're in-game you may want to quickly toggle certain options.
+<br>
+For that you may want to use client commands.
+
+In order to get a full list of commands type `/clientHelp`
 
 # Screenshots
 

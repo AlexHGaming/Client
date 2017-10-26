@@ -272,6 +272,10 @@ function resetVars() {
 };
 
 function connect(url) {
+    if (ws) {
+      ws.close();  
+    };
+    
     ws = new WebSocket(url);
     ws.binaryType = "arraybuffer";
     ws.onmessage = onWsMessage.bind(this);
@@ -305,8 +309,7 @@ function onClose() {
 };
 
 function handleWheel(event) {
-    zoom *= Math.pow(.9, event.wheelDelta / -120 || event.detail || 0); - 1 > zoom && (zoom = -1);
-    zoom > 4 / viewZoom && (zoom = 4 / viewZoom)
+    zoom *= Math.pow(.9, event.wheelDelta / -120 || event.detail || 0);
 };
 
 function onWsMessage(msg) {
@@ -671,7 +674,6 @@ function Draw() {
     } else {
         nodeX = (29 * nodeX + posX) / 30;
         nodeY = (29 * nodeY + posY) / 30;
-        viewZoom = (9 * viewZoom + posSize * viewRange()) / 10;
     };
 
     updateMouse();
