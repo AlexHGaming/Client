@@ -76,24 +76,26 @@ function Main() {
     document.body.onmousewheel = handleWheel;
     window.onresize = canvasResize;
 
+    $(document).on("ready", function () {
+        $("#nick").change(function() {
+            localStorage.setItem("nick", document.getElementById("nick").value);
+        })
+        $("#skinUrl").change(function() {
+            localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
+        })
+        
+        $('#nick').val(localStorage.getItem('nick'));
+        $('#skinUrl').val(localStorage.getItem('skinurl'));
+    })
+
     if (window.requestAnimationFrame) {
         reDraw();
     };
 
     setInterval(sendMouseMove, 1);
     canvasResize();
-    
-    $("#overlays").fadeIn(6E2);
 
-    $("#nick").change(function() {
-        localStorage.setItem("nick", document.getElementById("nick").value);
-    })
-    $("#skinUrl").change(function() {
-        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
-    })
-    
-    $('#nick').val(localStorage.getItem('nick'));
-    $('#skinUrl').val(localStorage.getItem('skinurl'));
+    $("#overlays").fadeIn(6E2);
 };
 
 
