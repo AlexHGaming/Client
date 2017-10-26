@@ -50,7 +50,7 @@ let options = {
 let fps = {
     startTime: 0,
     frameNumber: 0,
-    getFPS: function() {
+    getFPS: function () {
         this.frameNumber++;
         var d = new Date().getTime(),
             currentTime = (d - this.startTime) / 1000,
@@ -67,7 +67,7 @@ function Main() {
     document.getElementById("canvas").focus();
     canvas = document.getElementById("canvas");
 
-    canvas.onmousemove = function(event) {
+    canvas.onmousemove = function (event) {
         rawMouseX = event.clientX;
         rawMouseY = event.clientY;
         updateMouse()
@@ -96,7 +96,7 @@ function updateWindowFunctions() {
 
     // Window functions
 
-    window.onkeydown = function(event) {
+    window.onkeydown = function (event) {
         if (isTyping === true && event.keyCode !== 13)
             return;
 
@@ -161,9 +161,24 @@ function updateWindowFunctions() {
                     textBox.focus();
                 } else {
                     switch (textBox.value) {
+                        // Local commands
                         case "/sectors":
                             options.sectors = options.sectors === true ? false : true;
                             break;
+                        case "/borders":
+                            options.borders = options.borders === true ? false : true;
+                            break;
+                        case "/square":
+                            options.squareMode = options.squareMode === true ? false : true;
+                            break;
+                        case "/clientHelp":
+                            AddMessage("CLIENT", "#FFA500", "Here's a list of local commands that you may execute")
+                            AddMessage("CLIENT", "#FFA500", "/sectors - Toggle sectors on and off.")
+                            AddMessage("CLIENT", "#FFA500", "/borders - Toggle borders on and off.")
+                            AddMessage("CLIENT", "#FFA500", "/square  - Toggle square mode on and off.")
+                            break;
+
+                            // Chat message
                         default:
                             var buffer = prepareData(2 + 2 * textBox.value.length);
                             var offset = 0;
@@ -174,25 +189,25 @@ function updateWindowFunctions() {
                                 offset += 2;
                             }
                             send(buffer);
-                            textBox.blur();
                             break;
                     };
+                    textBox.blur();
+                    textBox.value = "";
                 };
 
-                textBox.value = "";
                 break;
         };
 
     };
 
-    window.setNick = function(arg) {
+    window.setNick = function (arg) {
         $("#overlays").hide();
         userNickName = arg;
         sendNickName();
         userScore = 0
     };
 
-    window.watch = function() {
+    window.watch = function () {
         userNickName = null;
         isWatching = true;
         sendUint8(1);
@@ -201,59 +216,51 @@ function updateWindowFunctions() {
 
     // Handle options
 
-    $("#chat").on("blur", function() {
+    $("#chat").on("blur", function () {
         isTyping = false;
     });
 
-    $("#chat").on("focus", function() {
+    $("#chat").on("focus", function () {
         isTyping = true;
     });
 
-    $("#delay").on("input", function() {
+    $("#delay").on("input", function () {
         $("#animationTxt").text("Animation delay " + $("#delay").val());
         options.delay = Number($("#delay").val());
     });
 
-    $("#food").change(function() {
+    $("#food").change(function () {
         options.hideFood = $(this).is(':checked');
     });
 
-    $("#sqMode").change(function() {
+    $("#sqMode").change(function () {
         options.squareMode = $(this).is(':checked');
     });
 
-    $("#ERTP").change(function() {
+    $("#ERTP").change(function () {
         options.ERTP = $(this).is(':checked');
     });
 
-    $("#sectors").change(function() {
+    $("#sectors").change(function () {
         options.sectors = $(this).is(':checked');
     });
 
-    $("#borders").change(function() {
+    $("#borders").change(function () {
         options.borders = $(this).is(':checked');
     });
 
-    $("#bgColour").change(function() {
+    $("#bgColour").change(function () {
         options.bgColour = $("#bgColour").val();
     });
 
-    $("#borderColour").change(function() {
+    $("#borderColour").change(function () {
         options.borderColour = $("#borderColour").val();
     });
 
-    $("#sectorColour").change(function() {
+    $("#sectorColour").change(function () {
         options.sectorColour = $("#sectorColour").val();
     });
-    $("#nick").change(function() {
-        localStorage.setItem("nick", document.getElementById("nick").value);
-    })
-    $("#skinUrl").change(function() {
-        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
-    })
-    $('#nick').val(localStorage.getItem('nick'));
-    $('#skinUrl').val(localStorage.getItem('skinurl'));
-    
+
     if (playerCells.length === 0 && isWatching === false) {
         $("#overlays").fadeIn(6E2);
     };
@@ -273,7 +280,7 @@ function resetVars() {
 
 function connect(url) {
     if (ws) {
-      ws.close();  
+        ws.close();
     };
     
     ws = new WebSocket(url);
@@ -442,12 +449,7 @@ function handleMessage(msg) {
             }
             color = '#' + color;
 
-            messages.push({
-                author: getString(),
-                color: color,
-                content: getString(),
-                time: Date.now(),
-            });
+            AddMessage(getString(), color, getString(), Date.now());
 
     }
 }
@@ -641,14 +643,14 @@ function canvasResize() {
 
 function viewRange() {
     var ratio;
-    ratio = Math.max(ctx.canvas.height / 1080, ctx.canvas.width / 1920);
+    ratio = Math.max(ctx.canvas.height / 1080, ctx.canvas.width / 4000);
     return ratio * zoom;
 };
 
 function calcViewZoom() {
     if (0 != playerCells.length) {
-        for (var newViewZoom = 0, i = 0; i < playerCells.length; i++) newViewZoom += playerCells[i].size;
-        newViewZoom = Math.pow(Math.min(64 / newViewZoom, 1), .4) * viewRange();
+        for (var newViewZoom = 0, i = 0; i < playerCells.length; i++)
+            newViewZoom = Math.pow(Math.min(64 / newViewZoom, 1), .4) * viewRange();
         viewZoom = (9 * viewZoom + newViewZoom) / 10
     };
 };
@@ -679,7 +681,7 @@ function Draw() {
     updateMouse();
     drawBackground();
 
-    nodelist.sort(function(a, b) {
+    nodelist.sort(function (a, b) {
         return a.size == b.size ? a.id - b.id : a.size - b.size;
     });
 
@@ -738,7 +740,6 @@ function Draw() {
         const section = leaderboard[i];
         const name = (i + 1) + ". " + (section.name === "" ? "An Unnamed Cell" : section.name);
         ctx.globalAlpha = .8;
-        ctx.strokeStyle = "#000"
         ctx.font = '15px Tahoma';
         ctx.fillStyle = "#FFF";
         ctx.fillText(name, (ctx.canvas.width - 200), 40 + 24 * i);
@@ -793,6 +794,15 @@ function calcUserScore() {
     return score;
 };
 
+function AddMessage(author, color, content, time) {
+    messages.push({
+        author: author,
+        color: color,
+        content: content,
+        time: time,
+    });
+};
+
 function Cell(id, x, y, size, color, name) {
     this.id = id;
     this.ox = this.x = x;
@@ -822,7 +832,7 @@ Cell.prototype = {
     destroyed: false,
     isVirus: false,
 
-    destroy: function() {
+    destroy: function () {
         var tmp;
         for (tmp = 0; tmp < nodelist.length; tmp++)
             if (nodelist[tmp] == this) {
@@ -842,7 +852,7 @@ Cell.prototype = {
         Cells.push(this)
     },
 
-    updatePos: function() {
+    updatePos: function () {
         if (0 == this.id) return 1;
         var a;
         a = (timestamp - this.updateTime) / options.delay;
@@ -857,7 +867,7 @@ Cell.prototype = {
         return b;
     },
 
-    shouldRender: function() {
+    shouldRender: function () {
         if (0 == this.id) {
             return true
         } else {
@@ -865,82 +875,80 @@ Cell.prototype = {
         }
     },
 
-    drawOneCell: function(ctx) {
+    drawOneCell: function (ctx) {
         const mass = ~~(this.size * this.size / 100);
         const isFood = (!this.isVirus && mass < 5);
 
-        if (this.shouldRender()) {
 
-            if (options.hideFood === true && isFood) {
-                return;
+        if (options.hideFood === true && isFood) {
+            return;
+        };
+
+        ctx.save();
+        c = this.updatePos();
+        this.destroyed && (ctx.globalAlpha *= 1 - c);
+        ctx.lineWidth = 10;
+        ctx.fillStyle = this.color;
+
+        // Draw nodes
+        ctx.beginPath();
+
+        if (options.squareMode === true) {
+            // Square
+            ctx.rect(this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
+        } else {
+            // Circle
+            ctx.arc(this.x, this.y, this.size, .1, Math.PI * 2, false);
+        };
+
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw skins
+        if (-1 != playerCells.indexOf(this)) {
+            const skin = new Image;
+            const skinUrl = String($("#skinUrl").val());
+
+            if (skinUrl.substr(0, 20) === "https://i.imgur.com/") {
+                skin.src = skinUrl;
             };
 
             ctx.save();
-            c = this.updatePos();
-            this.destroyed && (ctx.globalAlpha *= 1 - c);
-            ctx.lineWidth = 10;
-            ctx.fillStyle = this.color;
+            ctx.clip();
+            ctx.drawImage(skin, this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
+            ctx.restore();
 
-            // Draw nodes
-            ctx.beginPath();
+        }
 
-            if (options.squareMode === true) {
-                // Square
-                ctx.rect(this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
-            } else {
-                // Circle
-                ctx.arc(this.x, this.y, this.size, .1, Math.PI * 2, false);
+        if (0 != this.id) {
+
+            // Cell stroke
+            if (mass >= 20) {
+                ctx.strokeStyle = this.color;
+                ctx.globalAlpha = .6;
+                ctx.stroke();
             };
 
-            ctx.closePath();
-            ctx.fill();
-
-            // Draw skins
-            if (-1 != playerCells.indexOf(this)) {
-                const skin = new Image;
-                const skinUrl = String($("#skinUrl").val());
-
-                if (skinUrl.substr(0, 20) === "https://i.imgur.com/") {
-                    skin.src = skinUrl;
-                };
-
-                ctx.save();
-                ctx.clip();
-                ctx.drawImage(skin, this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
-                ctx.restore();
-
-            }
-
-            if (0 != this.id) {
-
-                // Cell stroke
-                if (mass >= 20) {
-                    ctx.strokeStyle = this.color;
-                    ctx.globalAlpha = .6;
-                    ctx.stroke();
-                };
-
-                // Draw name
-                if (this.name && mass >= 200) {
-                    ctx.globalAlpha = 1;
-                    ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
-                    ctx.fillStyle = '#FFF';
-                    ctx.textAlign = "center";
-                    ctx.fillText(this.name, this.x, this.y);
-                };
-
-                // Draw mass
-                if (mass >= 200) {
-                    ctx.globalAlpha = 1;
-                    ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
-                    ctx.fillStyle = '#FFF';
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(mass, this.x, this.y + 120);
-                };
+            // Draw name
+            if (this.name && mass >= 200) {
+                ctx.globalAlpha = 1;
+                ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
+                ctx.fillStyle = '#FFF';
+                ctx.textAlign = "center";
+                ctx.fillText(this.name, this.x, this.y);
             };
-            ctx.restore()
+
+            // Draw mass
+            if (mass >= 200) {
+                ctx.globalAlpha = 1;
+                ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
+                ctx.fillStyle = '#FFF';
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(mass, this.x, this.y + 120);
+            };
         };
+        ctx.restore()
     },
 
 };
