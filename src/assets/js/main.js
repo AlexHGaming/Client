@@ -82,7 +82,18 @@ function Main() {
 
     setInterval(sendMouseMove, 1);
     canvasResize();
+    
     $("#overlays").fadeIn(6E2);
+
+    $("#nick").change(function() {
+        localStorage.setItem("nick", document.getElementById("nick").value);
+    })
+    $("#skinUrl").change(function() {
+        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
+    })
+    
+    $('#nick').val(localStorage.getItem('nick'));
+    $('#skinUrl').val(localStorage.getItem('skinurl'));
 };
 
 
@@ -267,15 +278,6 @@ function updateWindowFunctions() {
     $("#sectorColour").change(function () {
         options.sectorColour = $("#sectorColour").val();
     });
-    $("#nick").change(function() {
-        localStorage.setItem("nick", document.getElementById("nick").value);
-    })
-    $("#skinUrl").change(function() {
-        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
-    })
-    
-    $('#nick').val(localStorage.getItem('nick'));
-    $('#skinUrl').val(localStorage.getItem('skinurl'));
 
     if (playerCells.length === 0 && isWatching === false) {
         $("#overlays").fadeIn(6E2);
