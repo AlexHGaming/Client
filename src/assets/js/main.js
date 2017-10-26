@@ -164,12 +164,19 @@ function updateWindowFunctions() {
                         // Local commands
                         case "/sectors":
                             options.sectors = options.sectors === true ? false : true;
+                            AddMessage("CLIENT", "#FFA500", `Sectors ${options.sectors === true ? "on." : "off."}`)                                                        
                             break;
                         case "/borders":
                             options.borders = options.borders === true ? false : true;
+                            AddMessage("CLIENT", "#FFA500", `Borders ${options.borders === true ? "on." : "off."}`)                                                        
                             break;
                         case "/square":
                             options.squareMode = options.squareMode === true ? false : true;
+                            AddMessage("CLIENT", "#FFA500", `Square mode ${options.squareMode === true ? "on." : "off."}`)                            
+                            break;
+                        case "/ertp":
+                            options.ERTP = options.ERTP === true ? false : true;
+                            AddMessage("CLIENT", "#FFA500", `ERTP ${options.ERTP === true ? "on." : "off."}`)                            
                             break;
                         case "/clientHelp":
                             AddMessage("CLIENT", "#FFA500", "Here's a list of local commands that you may execute")
@@ -260,6 +267,15 @@ function updateWindowFunctions() {
     $("#sectorColour").change(function () {
         options.sectorColour = $("#sectorColour").val();
     });
+    $("#nick").change(function() {
+        localStorage.setItem("nick", document.getElementById("nick").value);
+    })
+    $("#skinUrl").change(function() {
+        localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
+    })
+    
+    $('#nick').val(localStorage.getItem('nick'));
+    $('#skinUrl').val(localStorage.getItem('skinurl'));
 
     if (playerCells.length === 0 && isWatching === false) {
         $("#overlays").fadeIn(6E2);
