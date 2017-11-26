@@ -8,6 +8,7 @@ Version **0.0.7**
 1. In order to connect to a server you will need to use the `connect` function.
 <br>
 To do this you need to access the developer console in your browser.
+
 ##### This is usually done by pressing f12 on your keyboard.
 
 2. Use this snippet to connect to your server:
