@@ -45,6 +45,8 @@ let options = {
     sectorColour: "1A1A1A",
     hideFood: false,
     ERTP: false,
+    noMass: false,
+    noNames: false
 };
 
 let fps = {
@@ -77,13 +79,13 @@ function Main() {
     window.onresize = canvasResize;
 
     $(document).on("ready", function () {
-        $("#nick").change(function() {
+        $("#nick").change(function () {
             localStorage.setItem("nick", document.getElementById("nick").value);
         })
-        $("#skinUrl").change(function() {
+        $("#skinUrl").change(function () {
             localStorage.setItem("skinurl", document.getElementById("skinUrl").value);
         })
-        
+
         $('#nick').val(localStorage.getItem('nick'));
         $('#skinUrl').val(localStorage.getItem('skinurl'));
     })
@@ -177,19 +179,19 @@ function updateWindowFunctions() {
                         // Local commands
                         case "/sectors":
                             options.sectors = options.sectors === true ? false : true;
-                            AddMessage("CLIENT", "#FFA500", `Sectors ${options.sectors === true ? "on." : "off."}`)                                                        
+                            AddMessage("CLIENT", "#FFA500", `Sectors ${options.sectors === true ? "on." : "off."}`)
                             break;
                         case "/borders":
                             options.borders = options.borders === true ? false : true;
-                            AddMessage("CLIENT", "#FFA500", `Borders ${options.borders === true ? "on." : "off."}`)                                                        
+                            AddMessage("CLIENT", "#FFA500", `Borders ${options.borders === true ? "on." : "off."}`)
                             break;
                         case "/square":
                             options.squareMode = options.squareMode === true ? false : true;
-                            AddMessage("CLIENT", "#FFA500", `Square mode ${options.squareMode === true ? "on." : "off."}`)                            
+                            AddMessage("CLIENT", "#FFA500", `Square mode ${options.squareMode === true ? "on." : "off."}`)
                             break;
                         case "/ertp":
                             options.ERTP = options.ERTP === true ? false : true;
-                            AddMessage("CLIENT", "#FFA500", `ERTP ${options.ERTP === true ? "on." : "off."}`)                            
+                            AddMessage("CLIENT", "#FFA500", `ERTP ${options.ERTP === true ? "on." : "off."}`)
                             break;
                         case "/clientHelp":
                             AddMessage("CLIENT", "#FFA500", "Here's a list of local commands that you may execute")
@@ -269,6 +271,14 @@ function updateWindowFunctions() {
         options.borders = $(this).is(':checked');
     });
 
+    $("#name").change(function () {
+        options.noNames = $(this).is(':checked');
+    });
+
+    $("#mass").change(function () {
+        options.noMass = $(this).is(':checked');
+    });
+
     $("#bgColour").change(function () {
         options.bgColour = $("#bgColour").val();
     });
@@ -290,19 +300,19 @@ function updateWindowFunctions() {
 function resetVars() {
     nodesOnScreen = [];
     playerCells = [];
-    nodes = {};
+    nodes = [];
     nodelist = [];
     Cells = [];
     leaderboard = [];
-    canvas = /*teamScores =*/ null;
     userScore = 0;
+    messages = [];
 };
 
 function connect(url) {
     if (ws) {
         ws.close();
     };
-    
+
     ws = new WebSocket(url);
     ws.binaryType = "arraybuffer";
     ws.onmessage = onWsMessage.bind(this);
@@ -350,8 +360,7 @@ function prepareData(data) {
 function send(data) {
     if (!ws) {
         return;
-    };
-
+    }
     ws.send(data.buffer)
 };
 
@@ -589,7 +598,7 @@ function Sectors() {
         ctx.lineWidth = 0.05;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.font = barWidth * 0.6 + "px Russo One";
+        ctx.font = barWidth * 0.6 + "px Courgette";
         ctx.fillStyle = "#" + options.sectorColour;
 
 
@@ -614,6 +623,7 @@ function Sectors() {
             };
             j++;
         };
+
         ctx.stroke();
         ctx.restore();
     };
@@ -751,10 +761,6 @@ function Draw() {
     ctx.font = '20px Tahoma';
     ctx.fillText(fpsText, 10, 50);
 
-    if (leaderboard.length === 0) {
-        return;
-    };
-
     // Very simple leaderboard
     for (var i = 0; i < leaderboard.length; i++) {
         const section = leaderboard[i];
@@ -887,13 +893,6 @@ Cell.prototype = {
         return b;
     },
 
-    shouldRender: function () {
-        if (0 == this.id) {
-            return true
-        } else {
-            return !(this.x + this.size + 40 < nodeX - ctx.canvas.width / 2 / viewZoom || this.y + this.size + 40 < nodeY - ctx.canvas.height / 2 / viewZoom || this.x - this.size - 40 > nodeX + ctx.canvas.width / 2 / viewZoom || this.y - this.size - 40 > nodeY + ctx.canvas.height / 2 / viewZoom);
-        }
-    },
 
     drawOneCell: function (ctx) {
         const mass = ~~(this.size * this.size / 100);
@@ -943,14 +942,12 @@ Cell.prototype = {
         if (0 != this.id) {
 
             // Cell stroke
-            if (mass >= 20) {
-                ctx.strokeStyle = this.color;
-                ctx.globalAlpha = .6;
-                ctx.stroke();
-            };
+            ctx.strokeStyle = this.color;
+            ctx.globalAlpha = .6;
+            ctx.stroke();
 
             // Draw name
-            if (this.name && mass >= 200) {
+            if (this.name && mass >= 200 && options.noNames === false) {
                 ctx.globalAlpha = 1;
                 ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                 ctx.fillStyle = '#FFF';
@@ -959,7 +956,7 @@ Cell.prototype = {
             };
 
             // Draw mass
-            if (mass >= 200) {
+            if (mass >= 200 && options.noMass === false) {
                 ctx.globalAlpha = 1;
                 ctx.font = Math.max(~~(.3 * this.size), 24) + 'px Tahoma';
                 ctx.fillStyle = '#FFF';
